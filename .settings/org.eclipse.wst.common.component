@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="IntegracaoWebservice">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="commons-digester-2.0.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-digester-2.0/commons-digester-2.0">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="asm.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/asm/asm">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-email-1.2.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-email-1.2/commons-email-1.2">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-io-2.5.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-io-2.5/commons-io-2.5">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-validator.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-validator/commons-validator">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="all-themes-1.0.10.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/all-themes-1.0.10/all-themes-1.0.10">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="activation.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/activation/activation">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="asm-attrs.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/asm-attrs/asm-attrs">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="core-renderer.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/core-renderer/core-renderer">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-lang-2.1.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-lang-2.1/commons-lang-2.1">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cglib-2.1.3.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/cglib-2.1.3/cglib-2.1.3">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-codec-1.9.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-codec-1.9/commons-codec-1.9">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-logging-1.1.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-logging-1.1/commons-logging-1.1">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="c3p0-0.9.0.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/c3p0-0.9.0/c3p0-0.9.0">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-collections-3.2.1.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-collections-3.2.1/commons-collections-3.2.1">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-net-1.4.1.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-net-1.4.1/commons-net-1.4.1">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-codec-1.10.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-codec-1.10/commons-codec-1.10">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-beanutils-1.8.0.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-beanutils-1.8.0/commons-beanutils-1.8.0">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-el-1.0.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-el-1.0/commons-el-1.0">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="antlr-2.7.6.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/antlr-2.7.6/antlr-2.7.6">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="commons-fileupload-1.3.3.jar" deploy-path="/WEB-INF/lib/" handle="module:/resource/commons-fileupload-1.3.3/commons-fileupload-1.3.3">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="IntegracaoWebservice"/>
+        <property name="java-output-path" value="/IntegracaoWebservice/build/classes"/>
+    </wb-module>
+</project-modules>

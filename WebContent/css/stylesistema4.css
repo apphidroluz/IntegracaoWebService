@@ -1,0 +1,139 @@
+body{
+    padding: 50px;
+    background-color: #cee2f3;
+}
+a{
+    font-size: 20pt;
+    color: #2d3e5c;
+    margin: 0 60px 0 0; 
+}
+nav{
+    background-color: #eeeeee;
+    height: 100px;
+    width: auto;
+    border-color: #eeeeee;
+}
+th, td{
+    text-align: center;
+}
+h4, h5{
+    color:#fff; 
+}
+hr {
+    width:300px;
+    border-top: solid 3px;
+    color: red;
+}
+
+.imagemnav{
+    height: 70px;
+    margin-left: 100px;
+}
+.imagemrod{
+    height: 70px;
+    margin-left: 10px;
+}
+.container-fluid{
+    background-color: #eeeeee;
+    height: 100px;
+}
+.rodape{
+    
+    background-color:#03386b;
+    margin-bottom: 20px;
+}
+.cliente{
+    margin-top: 100px;
+}
+.panel-title{
+    text-align: center;
+}
+.row{
+    padding-top: 10px;
+    text-align:center;
+}
+.btnv{
+    padding:10px 60px 10px 60px; 
+    margin-left:80px;
+}
+
+
+.navbar-custom {
+    border: solid 1px #ccc;
+    background: #eeeeee;
+}
+.navbar-custom a:focus {
+  outline: none;
+}
+.navbar-custom .navbar-brand {
+  color: #2d3e5c;
+}
+.navbar-custom .navbar-brand:hover,
+.navbar-custom .navbar-brand:focus,
+.navbar-custom .navbar-brand:active,
+.navbar-custom .navbar-brand.active {
+  color: #2d3e5c;
+}
+.navbar-custom .navbar-nav li a {
+    color: #2d3e5c;
+    background: #eeeeee;
+}
+.navbar-custom .navbar-nav li.active a {
+  color: #2d3e5c;
+}
+.navbar-custom .navbar-toggle {
+    color: #2d3e5c;
+    text-transform: uppercase;
+    font-size: 12px;
+    border-color: #2d3e5c;
+}
+.navbar-custom .navbar-toggle:hover,
+.navbar-custom .navbar-toggle:focus {
+    margin-top: 10px;
+    background-color: #03386b;
+    color: #fff;
+    border-color: #2d3e5c;
+}
+
+
+
+
+@media (min-width: 768px) {
+    .navbar-custom {
+        padding: 25px 0;
+        -webkit-transition: padding 0.3s;
+        -moz-transition: padding 0.3s;
+        transition: padding 0.3s;
+    }
+    .navbar-custom .navbar-brand {
+        font-size: 2em;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+    }
+    .navbar-custom.affix {
+        padding: 10px 0;
+    }
+    .navbar-custom.affix .navbar-brand {
+        font-size: 1.5em;
+    }
+    .rodape{
+        -webkit-transition: height: 1380px;
+        -moz-transition: height: 1380px;        
+        background-color:#03386b;
+      
+    }
+}
+
+
+#container {
+    height: 300px;
+    min-width: 310px;
+    max-width: 800px;
+}
+#gmap_canvas img{
+    max-width:none!important;
+    background:none!important;
+    height:220px;
+    width:300px;
+}

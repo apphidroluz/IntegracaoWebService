@@ -1,0 +1,46 @@
+body{
+    background-image: url(../img/bg_login.jpg);
+    background-size: cover;   
+}
+
+
+
+/******MODAL******/
+.modal-dialog {
+    width: 440px;
+    margin-top: 70px;
+}
+.modal-content{
+    background-color: #f6f6f6;
+    color: #888888;
+}
+.modal-footer {
+    height: 90px;
+    margin: 0;
+}
+.modal-footer .progress {
+    display: none;
+    height: 32px;
+    margin: 0;
+}
+.input-group-addon {
+    color: #ccc;    
+}
+
+a:link, a:hover, a:visited{
+    color: #737373;
+    text-decoration: none;
+}
+
+
+/******IMAGEM******/
+.img-logo{
+    width: 300px;
+}
+.input-group-addon{
+    background-color: #fff;
+}
+.glyphicon{
+    color: #666666;
+}
+

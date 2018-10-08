@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://import_hidrol.postgresql.dbaas.com.br/import_hidrol</property>
+		<property name="hibernate.connection.username">import_hidrol</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<property name="hibernate.connection.password">KhyFXp39</property>
+		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.format_sql">true</property>
+		<property name="hibernate.connection.useUnicode">true</property>
+		<property name="hibernate.connection.characterEncoding">utf-8</property>
+		
+	    <mapping class="entity.Clientes" />
+		<mapping class="entity.Clientes_Concentrador" />
+		<mapping class="entity.Hidrometro" />
+		<mapping class="entity.Facturation" />
+		<mapping class="entity.Importacao" />
+		
+
+
+
+	</session-factory>
+</hibernate-configuration>
