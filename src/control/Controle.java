@@ -94,17 +94,21 @@ public class Controle extends HttpServlet {
 		String login = new String(request.getParameter("login"));
 		String senha = new String(request.getParameter("senha"));
 
+		String Nome_Cliente = null;
+		String Enderenco = null;
+		Integer Cod_cli = null;
+
 		Consumo c = new Consumo();
-		
-		List<Hidrometro> h = new ArrayList<Hidrometro>();
+
+		List<Facturation> f = new ArrayList<Facturation>();
 
 		try {
 			List<Dados> dados = c.retorna_token(login, senha);
 
 			System.out.println(dados);
-			
+
 			Collections.sort(dados);
-			
+
 			System.out.println(dados);
 
 			dd_atualizados = new ArrayList();
@@ -137,37 +141,37 @@ public class Controle extends HttpServlet {
 
 			}
 
+			// for (int i = 0; i < dd_atualizados.size(); i++) {
+			//
+			// try {
+			//
+			// h = new HidrometroDao().findHidro(dd_atualizados.get(i).getNumHidrometro());
+			//
+			// System.out.println(h);
+			//
+			// if (h.size() > 0) {
+			//
+			// dd_atualizados.get(i).setLocalizacao(h.get(0).getLocal());
+			// dd_atualizados.get(i).setCodigo(h.get(0).getCliente().getCodigo());
+			//
+			// }
+			//
+			// } catch (HibernateException e) {
+			//
+			// e.printStackTrace();
+			// } catch (SQLException e) {
+			//
+			// e.printStackTrace();
+			// }
+			//
+			// }
+
 			for (int i = 0; i < dd_atualizados.size(); i++) {
 
 				try {
+					f = new FacturationDao().findFact(dd_atualizados.get(i).getNumHidrometro());
 
-					 h = new HidrometroDao().findHidro(dd_atualizados.get(i).getNumHidrometro());
-					 
-					 System.out.println(h);
-
-					if (h.size() > 0) {
-
-						dd_atualizados.get(i).setLocalizacao(h.get(0).getLocal());
-						dd_atualizados.get(i).setCodigo(h.get(0).getCliente().getCodigo());
-
-					}
-
-				} catch (HibernateException e) {
-
-					e.printStackTrace();
-				} catch (SQLException e) {
-
-					e.printStackTrace();
-				}
-
-			}
-
-			for (int i = 0; i < dd_atualizados.size(); i++) {
-
-				try {
-					List<Facturation> f = new FacturationDao().findFact(dd_atualizados.get(i).getNumHidrometro());
-					
-				System.out.println(f);
+					System.out.println(f);
 
 					SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
 					SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd");
@@ -176,10 +180,18 @@ public class Controle extends HttpServlet {
 
 						String result = out.format(in.parse(dd_atualizados.get(i).getData()));
 
+						List<Hidrometro> h = new HidrometroDao().findHidro(dd_atualizados.get(i).getNumHidrometro());
+
 						dd_atualizados.get(i).setData_hist(result);
 						dd_atualizados.get(i).setIndice_antigo(dd_atualizados.get(i).getIndice_atual());
 						dd_atualizados.get(i).setConsumo(0.);
-					
+
+						dd_atualizados.get(i).setLocalizacao(h.get(0).getLocal());
+						dd_atualizados.get(i).setCodigo(h.get(0).getCliente().getCodigo());
+
+						Nome_Cliente = h.get(0).getCliente().getNomfant_apel();
+						Enderenco = h.get(0).getCliente().getEndereco();
+						Cod_cli = h.get(0).getCliente().getCodigo();
 
 					} else {
 
@@ -189,6 +201,14 @@ public class Controle extends HttpServlet {
 						dd_atualizados.get(i).setIndice_antigo(f.get(0).getIndice());
 						dd_atualizados.get(i)
 								.setConsumo((double) (dd_atualizados.get(i).getIndice_atual() - f.get(0).getIndice()));
+
+						dd_atualizados.get(i).setLocalizacao(f.get(0).getLocaligacao());
+						dd_atualizados.get(i).setCodigo(f.get(0).getCod_cad01().getCodigo());
+
+						Nome_Cliente = f.get(0).getCod_cad01().getNomfant_apel();
+						Enderenco = f.get(0).getCod_cad01().getEndereco();
+						Cod_cli = f.get(0).getCod_cad01().getCodigo();
+
 					}
 
 				} catch (HibernateException e) {
@@ -236,10 +256,9 @@ public class Controle extends HttpServlet {
 			}
 			writer.close();
 
-			request.getSession().setAttribute("CONDO", h.get(0).getCliente().getNomfant_apel());
-			request.getSession().setAttribute("ENDE", h.get(0).getCliente().getEndereco() + ", " + h.get(0).getCliente().getBairro() 
-					+ ", " + h.get(0).getCliente().getCidade());
-			request.getSession().setAttribute("COD_CLI", h.get(0).getCliente().getCodigo());
+			request.getSession().setAttribute("CONDO", Nome_Cliente);
+			request.getSession().setAttribute("ENDE", Enderenco);
+			request.getSession().setAttribute("COD_CLI", Cod_cli);
 			request.setAttribute("dados", dd_atualizados);
 		} catch (JSONException e) {
 
@@ -271,9 +290,9 @@ public class Controle extends HttpServlet {
 			imp.setCliente(c);
 			imp.setData_imp(data_imp);
 
-			//ImportacaoDao id = new ImportacaoDao();
+			// ImportacaoDao id = new ImportacaoDao();
 
-			//id.gravar(imp);
+			// id.gravar(imp);
 
 			for (int i = 0; i < dados.size(); i++) {
 
@@ -304,9 +323,12 @@ public class Controle extends HttpServlet {
 				f.setData_hist(dt_hist);
 				f.setIndice_antigo(dados.get(i).getIndice_antigo());
 				f.setConsumo(dados.get(i).getConsumo());
+				f.setCod_cad01(c);
 
-				new FacturationDao().gravar(f, imp);
+				fact.add(f);
 			}
+
+			new FacturationDao().gravar(fact, imp);
 
 		} catch (Exception ex) {
 
@@ -318,38 +340,35 @@ public class Controle extends HttpServlet {
 
 	private void consulta_importacao(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			
+
 			String codigo = new String(request.getParameter("codigo"));
-			
+
 			Integer cod_cli = Integer.parseInt(codigo);
-			
+
 			ImportacaoDao i = new ImportacaoDao();
-			
+
 			List<Importacao> importacoes = i.findImp(cod_cli);
-			
-			
+
 			request.setAttribute("dados", importacoes);
-						
+
 			request.getRequestDispatcher("consulta.jsp").forward(request, response);
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void excluir(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			
+
 			String idImp = new String(request.getParameter("id_IMP"));
 			Integer cod_cli = Integer.parseInt(idImp);
-			
+
 			ImportacaoDao i = new ImportacaoDao();
 			i.delete(cod_cli);
-			
-			
-			
+
 			request.getRequestDispatcher("consulta.jsp").forward(request, response);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

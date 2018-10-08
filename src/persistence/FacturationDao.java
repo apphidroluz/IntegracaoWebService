@@ -20,14 +20,19 @@ public class FacturationDao {
 	Query query;
 	Criteria criteria;
 
-	public void gravar(Facturation fac, Importacao imp) throws Exception {
+	public void gravar(List<Facturation> fac, Importacao imp) throws Exception {
 
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
-			session.save(fac);
-			imp.adicionar(fac);
-			session.save(imp);
+
+			for (Facturation f : fac) {
+				session.save(f);
+				imp.adicionar(f);
+				session.save(imp);
+
+			}
+
 			transaction.commit();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -45,10 +50,10 @@ public class FacturationDao {
 		try {
 
 			session = HibernateUtil.getSessionFactory().openSession();
-			query = session.createQuery("from Facturation as f where f.num_medidor= '" + Hidro + "' Order by f.id_FT desc");
-			//query.uniqueResult();
+			query = session
+					.createQuery("from Facturation as f where f.num_medidor= '" + Hidro + "' Order by f.id_FT desc");
+			// query.uniqueResult();
 			lista = query.list();
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,16 +82,15 @@ public class FacturationDao {
 		return lista;
 
 	}
-	
-	
+
 	public static void main(String[] args) {
-		
+
 		FacturationDao f = new FacturationDao();
-		
+
 		List<Facturation> l;
 		try {
 			l = f.findFact("D17B705291");
-			
+
 			System.out.println(l);
 		} catch (HibernateException e) {
 			// TODO Auto-generated catch block
@@ -95,9 +99,7 @@ public class FacturationDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
 	}
 
 }

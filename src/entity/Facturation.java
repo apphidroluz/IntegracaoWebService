@@ -71,6 +71,10 @@ public class Facturation {
 	@Column
 	private Integer levantamento = null;
 	
+	@ManyToOne
+	@JoinColumn(name = "cod_cad01")
+	private Clientes cod_cad01;
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Importacao importacao;
@@ -213,6 +217,16 @@ public class Facturation {
 
 	public void setImportacao(Importacao importacao) {
 		this.importacao = importacao;
+	}
+	
+	
+
+	public Clientes getCod_cad01() {
+		return cod_cad01;
+	}
+
+	public void setCod_cad01(Clientes cod_cad01) {
+		this.cod_cad01 = cod_cad01;
 	}
 
 	@Override
