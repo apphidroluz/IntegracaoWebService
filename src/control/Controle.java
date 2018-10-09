@@ -24,10 +24,12 @@ import org.hibernate.HibernateException;
 import org.json.JSONException;
 
 import entity.Clientes;
+import entity.Clientes_Concentrador;
 import entity.Dados;
 import entity.Facturation;
 import entity.Hidrometro;
 import entity.Importacao;
+import persistence.Clientes_ConcentradorDao;
 import persistence.FacturationDao;
 import persistence.HidrometroDao;
 import persistence.ImportacaoDao;
@@ -38,6 +40,8 @@ public class Controle extends HttpServlet {
 	private String filename;
 	private String path;
 	private List<Dados> dd_atualizados;
+	SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+	SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd");
 
 	private File file;
 
@@ -101,171 +105,178 @@ public class Controle extends HttpServlet {
 		Consumo c = new Consumo();
 
 		List<Facturation> f = new ArrayList<Facturation>();
+		List<Hidrometro> h = new ArrayList<Hidrometro>();
+		List<Dados> dados = new ArrayList<Dados>();
 
 		try {
-			List<Dados> dados = c.retorna_token(login, senha);
 
-			System.out.println(dados);
+			Clientes_Concentrador cli = new Clientes_ConcentradorDao().logar(login, senha);
 
-			Collections.sort(dados);
+	
 
-			System.out.println(dados);
+			if (cli != null) {
+				
+				Nome_Cliente = cli.getCliente().getNomfant_apel();
+				Enderenco = cli.getCliente().getEndereco();
+				Cod_cli = cli.getCliente().getCodigo();
 
-			dd_atualizados = new ArrayList();
+				dados = c.retorna_token(login, senha);
 
-			for (int i = 0; i < dados.size(); i++) {
+				Collections.sort(dados);
 
-				if (dd_atualizados.isEmpty()) {
+				dd_atualizados = new ArrayList();
 
-					dd_atualizados.add(dados.get(i));
+				for (int i = 0; i < dados.size(); i++) {
 
-				} else {
+					if (dd_atualizados.isEmpty()) {
 
-					int count = 0;
+						dd_atualizados.add(dados.get(i));
 
-					for (Dados d : dd_atualizados) {
+					} else {
 
-						if (dados.get(i).getNumHidrometro().equalsIgnoreCase(d.getNumHidrometro())) {
+						int count = 0;
 
-							count++;
+						for (Dados d : dd_atualizados) {
+
+							if (dados.get(i).getNumHidrometro().equalsIgnoreCase(d.getNumHidrometro())) {
+
+								count++;
+							}
+
+						}
+
+						if (count == 0) {
+
+							dd_atualizados.add(dados.get(i));
 						}
 
 					}
 
-					if (count == 0) {
-
-						dd_atualizados.add(dados.get(i));
-					}
-
 				}
 
-			}
-
-			// for (int i = 0; i < dd_atualizados.size(); i++) {
-			//
-			// try {
-			//
-			// h = new HidrometroDao().findHidro(dd_atualizados.get(i).getNumHidrometro());
-			//
-			// System.out.println(h);
-			//
-			// if (h.size() > 0) {
-			//
-			// dd_atualizados.get(i).setLocalizacao(h.get(0).getLocal());
-			// dd_atualizados.get(i).setCodigo(h.get(0).getCliente().getCodigo());
-			//
-			// }
-			//
-			// } catch (HibernateException e) {
-			//
-			// e.printStackTrace();
-			// } catch (SQLException e) {
-			//
-			// e.printStackTrace();
-			// }
-			//
-			// }
-
-			for (int i = 0; i < dd_atualizados.size(); i++) {
-
 				try {
-					f = new FacturationDao().findFact(dd_atualizados.get(i).getNumHidrometro());
 
-					System.out.println(f);
+					h = new HidrometroDao().findhidroCli(cli.getCliente().getCodigo());
+					f = new FacturationDao().findFactCli(cli.getCliente().getCodigo());
 
-					SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
-					SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd");
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 
-					if (f.isEmpty()) {
+				for (int i = 0; i < dd_atualizados.size(); i++) {
 
-						String result = out.format(in.parse(dd_atualizados.get(i).getData()));
+					if (!f.isEmpty()) {
 
-						List<Hidrometro> h = new HidrometroDao().findHidro(dd_atualizados.get(i).getNumHidrometro());
+						for (Facturation fac : f) {
 
-						dd_atualizados.get(i).setData_hist(result);
-						dd_atualizados.get(i).setIndice_antigo(dd_atualizados.get(i).getIndice_atual());
-						dd_atualizados.get(i).setConsumo(0.);
+							if (fac.getNum_medidor().contains(dd_atualizados.get(i).getNumHidrometro())) {
 
-						dd_atualizados.get(i).setLocalizacao(h.get(0).getLocal());
-						dd_atualizados.get(i).setCodigo(h.get(0).getCliente().getCodigo());
+								String result = out.format(in.parse(f.get(0).getData_levant().toString()));
 
-						Nome_Cliente = h.get(0).getCliente().getNomfant_apel();
-						Enderenco = h.get(0).getCliente().getEndereco();
-						Cod_cli = h.get(0).getCliente().getCodigo();
+								dd_atualizados.get(i).setData_hist(result);
+								dd_atualizados.get(i).setIndice_antigo(fac.getIndice());
+								dd_atualizados.get(i).setConsumo(
+										(double) (dd_atualizados.get(i).getIndice_atual() - fac.getIndice()));
+
+								dd_atualizados.get(i).setLocalizacao(fac.getLocaligacao());
+								dd_atualizados.get(i).setCodigo(fac.getCod_cad01().getCodigo());
+
+								
+							}
+
+						}
 
 					} else {
 
-						String result = out.format(in.parse(f.get(0).getData_levant().toString()));
+						for (Hidrometro hidro : h) {
 
-						dd_atualizados.get(i).setData_hist(result);
-						dd_atualizados.get(i).setIndice_antigo(f.get(0).getIndice());
-						dd_atualizados.get(i)
-								.setConsumo((double) (dd_atualizados.get(i).getIndice_atual() - f.get(0).getIndice()));
+							if (hidro.getNum_hidro().contains(dd_atualizados.get(i).getNumHidrometro())) {
 
-						dd_atualizados.get(i).setLocalizacao(f.get(0).getLocaligacao());
-						dd_atualizados.get(i).setCodigo(f.get(0).getCod_cad01().getCodigo());
+								String result = out.format(in.parse(dd_atualizados.get(i).getData()));
 
-						Nome_Cliente = f.get(0).getCod_cad01().getNomfant_apel();
-						Enderenco = f.get(0).getCod_cad01().getEndereco();
-						Cod_cli = f.get(0).getCod_cad01().getCodigo();
+								dd_atualizados.get(i).setData_hist(result);
+								dd_atualizados.get(i).setIndice_antigo(dd_atualizados.get(i).getIndice_atual());
+								dd_atualizados.get(i).setConsumo(0.);
+
+								dd_atualizados.get(i).setLocalizacao(hidro.getLocal());
+								dd_atualizados.get(i).setCodigo(hidro.getCliente().getCodigo());
+
+						
+
+							}
+
+						}
 
 					}
 
-				} catch (HibernateException e) {
+					
 
-					e.printStackTrace();
-				} catch (SQLException e) {
+					ServletContext context = request.getServletContext();
+					path = context.getRealPath("/");
 
-					e.printStackTrace();
+					System.out.println(path);
+
+					file = new File(path + dados.get(0).getIdXML_TAB() + ".txt");
+
+					FileWriter writer = new FileWriter(file);
+
+					writer.write(Parametros.cabecalho);
+					writer.write(System.getProperty("line.separator"));
+
+					for (int j = 0; j < dd_atualizados.size(); j++) {
+
+						String dt = dd_atualizados.get(i).getData().substring(0, 10);
+						System.out.println("data : " + dt);
+
+						SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+						SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
+
+						String result = out.format(out.parse(dt));
+
+						writer.write(dd_atualizados.get(j).getLocalizacao() + "\t"
+								+ dd_atualizados.get(j).getIndice_atual() + "\t"
+								+ dd_atualizados.get(j).getIndice_antigo() + "\t" + dd_atualizados.get(j).getConsumo()
+								+ "\t" + dd_atualizados.get(j).getHaDesmontagem() + "\t"
+								+ dd_atualizados.get(j).getHaVazamento() + "\t"
+								+ dd_atualizados.get(j).getHouveVazamento() + "\t"
+								+ dd_atualizados.get(j).getMedidorBloqueado() + "\t" + dd_atualizados.get(j).getCodigo()
+								+ "\t" + dd_atualizados.get(j).getNumHidrometro() + "\t" + result + "\t"
+								+ dd_atualizados.get(j).getData_hist() + "\t" + 8 + "\t" + 0 + "\t"
+								+ dd_atualizados.get(j).getHouveDesmontagem() + "\t"
+								+ dd_atualizados.get(j).getRetornoAgua());
+						writer.write(System.getProperty("line.separator"));
+
+					}
+					
+					writer.close();
+					
 				}
+					
+
+					request.getSession().setAttribute("CONDO", Nome_Cliente);
+					request.getSession().setAttribute("ENDE", Enderenco);
+					request.getSession().setAttribute("COD_CLI", Cod_cli);
+					request.setAttribute("dados", dd_atualizados);
+
+					request.getRequestDispatcher("medicao.jsp").forward(request, response);
+
+			
+
+			} else {
+
+				request.setAttribute("msg", "Usuário ou senha inválidos");
+
+				request.getRequestDispatcher("inicio.jsp").forward(request, response);
+
+				login = "";
+				senha = "";
 
 			}
 
-			ServletContext context = request.getServletContext();
-			path = context.getRealPath("/");
-
-			System.out.println(path);
-
-			file = new File(path + dados.get(0).getIdXML_TAB() + ".txt");
-
-			FileWriter writer = new FileWriter(file);
-
-			writer.write(Parametros.cabecalho);
-			writer.write(System.getProperty("line.separator"));
-
-			for (int i = 0; i < dd_atualizados.size(); i++) {
-
-				String dt = dd_atualizados.get(i).getData().substring(0, 10);
-				System.out.println("data : " + dt);
-
-				SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
-				SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
-
-				String result = out.format(out.parse(dt));
-
-				writer.write(dd_atualizados.get(i).getLocalizacao() + "\t" + dd_atualizados.get(i).getIndice_atual()
-						+ "\t" + dd_atualizados.get(i).getIndice_antigo() + "\t" + dd_atualizados.get(i).getConsumo()
-						+ "\t" + dd_atualizados.get(i).getHaDesmontagem() + "\t"
-						+ dd_atualizados.get(i).getHaVazamento() + "\t" + dd_atualizados.get(i).getHouveVazamento()
-						+ "\t" + dd_atualizados.get(i).getMedidorBloqueado() + "\t" + dd_atualizados.get(i).getCodigo()
-						+ "\t" + dd_atualizados.get(i).getNumHidrometro() + "\t" + result + "\t"
-						+ dd_atualizados.get(i).getData_hist() + "\t" + 8 + "\t" + 0 + "\t"
-						+ dd_atualizados.get(i).getHouveDesmontagem() + "\t" + dd_atualizados.get(i).getRetornoAgua());
-				writer.write(System.getProperty("line.separator"));
-
-			}
-			writer.close();
-
-			request.getSession().setAttribute("CONDO", Nome_Cliente);
-			request.getSession().setAttribute("ENDE", Enderenco);
-			request.getSession().setAttribute("COD_CLI", Cod_cli);
-			request.setAttribute("dados", dd_atualizados);
-		} catch (JSONException e) {
-
-			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-
-		request.getRequestDispatcher("medicao.jsp").forward(request, response);
 
 		return "";
 	}

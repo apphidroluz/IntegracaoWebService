@@ -40,10 +40,30 @@ public class HidrometroDao {
 	}
 	
 	
+	public List<Hidrometro> findhidroCli(Integer cod_cli) throws HibernateException, SQLException {
+		List<Hidrometro> lista = null;
+
+		try {
+
+			session = HibernateUtil.getSessionFactory().openSession();
+			query = session.createQuery("from Hidrometro as h where h.cliente.codigo= " + cod_cli + " Order by h.num_hidro desc");
+			lista = query.list();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		} finally {
+			HibernateUtil.fechar_conexao(session);
+		}
+
+		return lista;
+	}
+	
+	
 	public static void main(String[] args) {
 		HidrometroDao hd = new HidrometroDao();
 		try {
-			List<Hidrometro> teste = hd.findHidro("123456789123465");
+			List<Hidrometro> teste = hd.findhidroCli(1);
 			
 			System.out.println(teste);
 		} catch (HibernateException e) {

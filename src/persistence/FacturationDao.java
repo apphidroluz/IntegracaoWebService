@@ -65,6 +65,28 @@ public class FacturationDao {
 		return lista;
 
 	}
+	
+	
+	public List<Facturation> findFactCli(Integer cli) throws HibernateException, SQLException {
+		List<Facturation> lista = null;
+
+		try {
+
+			session = HibernateUtil.getSessionFactory().openSession();
+			query = session
+					.createQuery("from Facturation as f where f.cod_cad01.codigo= " + cli + " Order by f.id_FT,f.num_medidor desc");
+			lista = query.list();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+
+			HibernateUtil.fechar_conexao(session);
+		}
+
+		return lista;
+
+	}
 
 	public List<Facturation> findFac(String facturation) throws HibernateException, SQLException {
 		List<Facturation> lista = null;
