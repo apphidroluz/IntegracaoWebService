@@ -110,7 +110,7 @@
 						<div class="input-group">
 
 							<input type="text" class="form-control" id="Login"
-								placeholder="Email" name="login"> <label for="Login"
+								placeholder="Login" name="login"> <label for="Login"
 								class="input-group-addon glyphicon glyphicon-user"></label>
 
 						</div>
