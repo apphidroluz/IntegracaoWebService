@@ -413,5 +413,4 @@ public class Controle extends HttpServlet {
 		request.getRequestDispatcher("inicio.jsp").forward(request, response);
 
 	}
-
 }
