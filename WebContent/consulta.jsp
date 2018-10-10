@@ -75,6 +75,8 @@
 	</nav>
 
 	<!-- FECHA BARRA DE NAVEGAÇÃO -->
+	
+	
 
 	<div class="col-md-12 cliente">
 		<div class="panel panel-primary">
@@ -84,10 +86,6 @@
 					<div>
 
 						<div class="col-md-12" align="right">
-							<!-- <a href="Controle?cmd=exportar" class="btn btn-danger btnv"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-								title="Clique para exportar as leituras" style="font-size: 12px; margin-right: -40px">Exportar</a> 
-						 -->
-
 							<div class="col-md-7" align="right"
 								style="font-size: 15px; margin-top: 5px">
 								<b> CONSULTA DE IMPORTAÇÕES </b>
@@ -126,8 +124,8 @@
 								<td>${linha.id_IMP}</td>
 								<td>${linha.cliente.nomfant_apel}</td>
 								<td>${linha.data_imp}</td>
-								<td><a type="submit" class="button" style="color: danger; text"
-									href="Controle?cmd=excluir&id_IMP=${linha.id_IMP}" title="Remover importação">Remover</a></td>
+								<td><a type="submit" class="glyphicon glyphicon-trash" style="color: danger; text"
+									href="Controle?cmd=excluir&id_IMP=${linha.id_IMP}&codigo=${COD_CLI}" title="Remover importação"></a></td>
 
 							</tr>
 						</c:forEach>

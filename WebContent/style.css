@@ -1,0 +1,50 @@
+body{
+    padding: 50px;
+}
+
+
+
+/******MODAL******/
+.modal-dialog {
+    width: 440px;
+    margin-top: 100px;
+}
+.modal-content{
+    background-color: #EEEEEE;
+    color: #888888;
+    margin-top: 100px;
+}
+.modal-footer {
+    height: 70px;
+    margin: 0;
+}
+.modal-footer .progress {
+    display: none;
+    height: 32px;
+    margin: 0;
+}
+.input-group-addon {
+    color: #ccc;    
+}
+
+label{
+    display: block;
+    text-align: right;
+}
+
+a:link, a:hover, a:visited{
+    color: #888888;
+    text-decoration: none;
+}
+
+
+/******IMAGEM******/
+.img-logo{
+    width: 380px;
+}
+.input-group-addon{
+    background-color: #fff;
+}
+.glyphicon{
+    color: #666666;
+}
