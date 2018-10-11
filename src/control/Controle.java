@@ -103,6 +103,7 @@ public class Controle extends HttpServlet {
 		Integer Cod_cli = null;
 
 		Consumo c = new Consumo();
+		ConsumoData cd = new ConsumoData();
 
 		List<Facturation> f = new ArrayList<Facturation>();
 		List<Hidrometro> h = new ArrayList<Hidrometro>();
@@ -111,13 +112,25 @@ public class Controle extends HttpServlet {
 		try {
 
 			Clientes_Concentrador cli = new Clientes_ConcentradorDao().logar(login, senha);
+			
+			
+			
 
 			if (cli != null) {
+				
+				
+				Controle cont = new Controle();
+				
+				String data = cont.data(cli.getCliente().getCodigo());
+				
+				
+				ArrayList<String> datas = cd.retorna_token(login, senha, data);
+				
+				System.out.println(datas);
 
 				Nome_Cliente = cli.getCliente().getNomfant_apel();
 				Enderenco = cli.getCliente().getEndereco();
 				Cod_cli = cli.getCliente().getCodigo();
-
 				dados = c.retorna_token(login, senha);
 
 				Collections.sort(dados);
@@ -137,55 +150,39 @@ public class Controle extends HttpServlet {
 						for (Dados d : dd_atualizados) {
 
 							if (dados.get(i).getNumHidrometro().equalsIgnoreCase(d.getNumHidrometro())) {
-
 								count++;
 							}
-
 						}
 
 						if (count == 0) {
 
 							dd_atualizados.add(dados.get(i));
 						}
-
 					}
-
 				}
 
 				try {
-
 					h = new HidrometroDao().findhidroCli(cli.getCliente().getCodigo());
 					f = new FacturationDao().findFactCli(cli.getCliente().getCodigo());
-
 				} catch (Exception e) {
 					// TODO: handle exception
 				}
 
 				List<Hidrometro> hidro_falta = new ArrayList<Hidrometro>();
-
 				Boolean Tem = false;
 
 				for (Hidrometro hid : h) {
-
 					Tem = false;
-
 					for (Dados d : dd_atualizados) {
-
 						if (hid.getNum_hidro().contains(d.getNumHidrometro())) {
-
 							Tem = true;
-
 						}
-
 					}
-
 					if (Tem == false) {
-
 						hidro_falta.add(hid);
 					}
-
 				}
-				
+
 				System.out.println(hidro_falta);
 
 				for (int i = 0; i < dd_atualizados.size(); i++) {
@@ -225,46 +222,50 @@ public class Controle extends HttpServlet {
 
 							}
 						}
-					}
-
-					ServletContext context = request.getServletContext();
-					path = context.getRealPath("/");
-
-
-					file = new File(path + dados.get(0).getIdXML_TAB() + ".txt");
-
-					FileWriter writer = new FileWriter(file);
-
-					writer.write(Parametros.cabecalho);
-					writer.write(System.getProperty("line.separator"));
-
-					for (int j = 0; j < dd_atualizados.size(); j++) {
-
-						String dt = dd_atualizados.get(i).getData().substring(0, 10);
-
-						SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
-						SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
-
-						String result = out.format(out.parse(dt));
-
-						writer.write(dd_atualizados.get(j).getLocalizacao() + "\t"
-								+ dd_atualizados.get(j).getIndice_atual() + "\t"
-								+ dd_atualizados.get(j).getIndice_antigo() + "\t" + dd_atualizados.get(j).getConsumo()
-								+ "\t" + dd_atualizados.get(j).getHaDesmontagem() + "\t"
-								+ dd_atualizados.get(j).getHaVazamento() + "\t"
-								+ dd_atualizados.get(j).getHouveVazamento() + "\t"
-								+ dd_atualizados.get(j).getMedidorBloqueado() + "\t" + dd_atualizados.get(j).getCodigo()
-								+ "\t" + dd_atualizados.get(j).getNumHidrometro() + "\t" + result + "\t"
-								+ dd_atualizados.get(j).getData_hist() + "\t" + 8 + "\t" + 0 + "\t"
-								+ dd_atualizados.get(j).getHouveDesmontagem() + "\t"
-								+ dd_atualizados.get(j).getRetornoAgua());
-						writer.write(System.getProperty("line.separator"));
 
 					}
 
-					writer.close();
+				if (dd_atualizados.get(i).getLocalizacao() == null) {
+
+						dd_atualizados.remove(i);
+					}
 
 				}
+
+				ServletContext context = request.getServletContext();
+				path = context.getRealPath("/");
+
+				file = new File(path + dados.get(0).getIdXML_TAB() + ".txt");
+
+				FileWriter writer = new FileWriter(file);
+
+				writer.write(Parametros.cabecalho);
+				writer.write(System.getProperty("line.separator"));
+
+				for (int j = 0; j < dd_atualizados.size(); j++) {
+
+					String dt = dd_atualizados.get(j).getData().substring(0, 10);
+
+					SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+					SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
+
+					String result = out.format(out.parse(dt));
+
+					writer.write(dd_atualizados.get(j).getLocalizacao() + "\t" + dd_atualizados.get(j).getIndice_atual()
+							+ "\t" + dd_atualizados.get(j).getIndice_antigo() + "\t"
+							+ dd_atualizados.get(j).getConsumo() + "\t" + dd_atualizados.get(j).getHaDesmontagem()
+							+ "\t" + dd_atualizados.get(j).getHaVazamento() + "\t"
+							+ dd_atualizados.get(j).getHouveVazamento() + "\t"
+							+ dd_atualizados.get(j).getMedidorBloqueado() + "\t" + dd_atualizados.get(j).getCodigo()
+							+ "\t" + dd_atualizados.get(j).getNumHidrometro() + "\t" + result + "\t"
+							+ dd_atualizados.get(j).getData_hist() + "\t" + 8 + "\t" + 0 + "\t"
+							+ dd_atualizados.get(j).getHouveDesmontagem() + "\t"
+							+ dd_atualizados.get(j).getRetornoAgua());
+					writer.write(System.getProperty("line.separator"));
+
+				}
+
+				writer.close();
 
 				request.getSession().setAttribute("CONDO", Nome_Cliente);
 				request.getSession().setAttribute("ENDE", Enderenco);
@@ -285,7 +286,7 @@ public class Controle extends HttpServlet {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 		return "";
@@ -294,6 +295,8 @@ public class Controle extends HttpServlet {
 	private void cadastra_fac(List<Dados> dados) throws ServletException, IOException {
 
 		List<Facturation> fact = new ArrayList<Facturation>();
+
+		System.out.println(dados);
 
 		try {
 
@@ -412,5 +415,32 @@ public class Controle extends HttpServlet {
 
 		request.getRequestDispatcher("inicio.jsp").forward(request, response);
 
+	}
+
+	private String data(Integer cod_cli) {
+		String data = null;
+		ImportacaoDao i = new ImportacaoDao();
+		try {
+			List<Importacao> importacoes = i.findImp(cod_cli);
+		
+			data = SDF.format(importacoes.get(0).getData_imp());
+			System.out.println(data);
+		} catch (HibernateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return data;
+	}
+	 public static void main(String[] args) {
+		Controle c = new Controle();
+		 c.data(1);
+		 
+		 
+		
 	}
 }

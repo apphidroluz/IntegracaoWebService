@@ -44,7 +44,7 @@ public class ImportacaoDao {
 		try {
 
 			session = HibernateUtil.getSessionFactory().openSession();
-			query = session.createQuery("from Importacao as i where i.cliente.codigo = " + cod_cli);
+			query = session.createQuery("from Importacao as i where i.cliente.codigo = " + cod_cli + "order by i.data_imp desc" );
 			lista = query.list();
 
 		} catch (Exception e) {

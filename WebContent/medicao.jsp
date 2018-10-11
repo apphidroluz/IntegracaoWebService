@@ -61,56 +61,17 @@
 			<a type="submit" class="btn btn-danger"
 				href="Controle?cmd=consulta_importacao&codigo=${COD_CLI}"
 				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Consultar
-				Importações</a> <a type="submit" class="btn btn-info"
+				Importações</a> 
+			<a type="submit" class="btn btn-info"
+				data-toggle="modal" data-target="#modalDatas"
+				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Datas anteriores</a>
+			<a type="submit" class="btn btn-info"
 				href="Controle?cmd=sair"
 				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Sair</a>
 		</div>
 	</nav>
 	<!-- FECHA BARRA DE NAVEGAÇÃO -->
 
-	<!-- Modal -->
-	<div class="modal fade" id="modalAviso" role="dialog">
-		<div class="modal-dialog">
-			<!-- Modal content-->
-			<div class="panel panel-info">
-				<div class="panel panel-heading">
-					<div class="panel-title">Alerta de leitura</div>
-				</div>
-				<div class="panel-body">
-					<c:if test="${not empty lista}">
-						<div class="panel-body" class="col-md-12" align="center" style="font-size: 14px; margin-top: -30px">
-								<b>Alguns hidrômetros não foram encontrados:</b>
-						</div>
-						<table class="table table-bordered table-hover table-condensed"">
-							<thead>
-								<tr>
-									<th style="text-align: center">Localização</th>
-									<th style="text-align: center">Nº do Hidrometro</th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach items="${lista}" var="linha">
-									<tr>
-										<td>${linha.local}</td>
-										<td>${linha.num_hidro}</td>
-								</c:forEach>
-							</tbody>
-						</table>
-					</c:if>
-					<c:if test="${empty lista}">
-						<div class="panel-body" class="col-md-12" align="center" style="font-size: 14px; margin-top: -20px">
-								<b>Todos os hidrômetros foram encontrados</b>
-						</div>
-					</c:if>
-					<div class="col-md-10"></div>
-					<div class="col-md-2">
-						<button type="button" class="btn btn-danger text-right btn-sm"
-							data-dismiss="modal" style="margin-left: 20px; margin-top: -5px">Fechar</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 	<div class="col-md-12 cliente">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
@@ -192,6 +153,94 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- MODAL DE ALERTA -->
+	<div class="modal fade" id="modalAviso" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="panel panel-info">
+				<div class="panel panel-heading">
+					<div class="panel-title">Alerta de leitura</div>
+				</div>
+				<div class="panel-body">
+					<c:if test="${not empty lista}">
+						<div class="panel-body" class="col-md-12" align="center" style="font-size: 14px; margin-top: -30px">
+								<b>Alguns hidrômetros não foram encontrados:</b>
+						</div>
+						<table class="table table-bordered table-hover table-condensed">
+							<thead>
+								<tr>
+									<th style="text-align: center">Localização</th>
+									<th style="text-align: center">Nº do Hidrometro</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach items="${lista}" var="linha">
+									<tr>
+										<td>${linha.local}</td>
+										<td>${linha.num_hidro}</td>
+								</c:forEach>
+							</tbody>
+						</table>
+					</c:if>
+					<c:if test="${empty lista}">
+						<div class="panel-body" class="col-md-12" align="center" style="font-size: 14px; margin-top: -20px">
+								<b>Todos os hidrômetros foram encontrados</b>
+						</div>
+					</c:if>
+					<div class="col-md-10"></div>
+					<div class="col-md-2">
+						<button type="button" class="btn btn-danger text-right btn-sm"
+							data-dismiss="modal" style="margin-left: 20px; margin-top: -5px">Fechar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- FIM DO MODAL -->
+	
+	<!-- MODAL DE DATAS -->
+	<div class="container">
+		<!-- Modal -->
+		<div class="modal fade" id="modalDatas" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="panel panel-info">
+					<div class="panel panel-heading">
+						<div class="panel-title">Leituras Anteriores</div>
+					</div>
+					<div class="panel-body">
+						<table class="table table-bordered table-hover table-condensed" style="font-size: 14px; margin-top: -20px">
+							<thead>
+								<tr>
+									<th style="text-align: center; vertical-align: middle">Datas</th>
+									<th style="text-align: center; vertical-align: middle">Função</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach items="${listaDatas}" var="linha">
+									<tr>
+										<td>Aqui vai a data</td>
+										<td><button type="button" class="btn btn-danger text-right btn-sm"
+												data-dismiss="modal" style="align-content: center">Selecionar</button>
+										</td>
+										<!-- <td>${linha.localizacao}</td> -->
+										
+								</c:forEach>
+							</tbody>
+						</table>
+						<div class="col-md-10"></div>
+						<div class="col-md-2">
+							<button type="button" class="btn btn-danger text-right btn-sm"
+								data-dismiss="modal" style="margin-left: 20px; margin-top: -5px">Fechar</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
 </body>
 
 <script type="text/javascript" charset="UTF-8">
