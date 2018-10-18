@@ -372,6 +372,8 @@ public class Controle extends HttpServlet {
 			ImportacaoDao i = new ImportacaoDao();
 
 			List<Importacao> importacoes = i.findImp(cod_cli);
+			
+			System.out.println(importacoes);
 
 			request.setAttribute("dados", importacoes);
 

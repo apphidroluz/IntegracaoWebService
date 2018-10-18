@@ -34,7 +34,7 @@ public class ConsumoData {
 		ConsumoData c = new ConsumoData();
 		List<String> d = new ArrayList<String>();
 
-		d = c.retorna_token("ROBSON", "12345", "2018-09-09");
+		d = c.retorna_token("ROBSON", "12345", "2018-11-10");
 		
 		System.out.println(d);
 	
