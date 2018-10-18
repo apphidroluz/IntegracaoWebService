@@ -50,9 +50,10 @@
 			style="margin-left: 250px; margin-top: -65px; width: 600px;">
 			<div class="row">
 				<div class="col-md-6" style="text-align: left;">
-					<input type="hidden" value="${COD_CLI}" id="unidade"
-						readonly="readonly"> <a id="unidade" value="${COD_CLI}"></a>
-					<b>Condominio: </b>${CONDO}<br> <b>Endereço: </b>${ENDE}<br>
+					<input type="hidden" value="${COD_CLI}" id="unidade" readonly="readonly"> 
+						<a id="unidade" value="${COD_CLI}"></a>
+					<b>Condominio: </b>${CONDO}<br> 
+					<b>Endereço: </b>${ENDE}<br>
 				</div>
 			</div>
 		</div>
@@ -213,25 +214,26 @@
 						<table class="table table-bordered table-hover table-condensed" style="font-size: 14px; margin-top: -20px">
 							<thead>
 								<tr>
-									<th style="text-align: center; vertical-align: middle">Datas</th>
-									<th style="text-align: center; vertical-align: middle">Função</th>
+									<th style="text-align: center; vertical-align: middle">Datas Anteriores</th>
+									<th style="text-align: center; vertical-align: middle"></th>
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${listaDatas}" var="linha">
+								<c:forEach items="${datas}" var="linha1">
 									<tr>
-										<td>Aqui vai a data</td>
-										<td><button type="button" class="btn btn-danger text-right btn-sm"
-												data-dismiss="modal" style="align-content: center">Selecionar</button>
-										</td>
-										<!-- <td>${linha.localizacao}</td> -->
+										<td>${linha1}</td>
+										<td><a type="submit" class="btn btn-success text-right btn-sm"
+											href="Controle?cmd=atualizaData&data=${linha1}"
+											style="text-align: rigth; text-decoration: none">Selecionar Data</a></td>
+										
 										
 								</c:forEach>
 							</tbody>
 						</table>
 						<div class="col-md-10"></div>
 						<div class="col-md-2">
-							<button type="button" class="btn btn-danger text-right btn-sm"
+							<button type="button" class="btn btn-danger text-right btn-sm" 
+								href="Controle?cmd=atualizaData"
 								data-dismiss="modal" style="margin-left: 20px; margin-top: -5px">Fechar</button>
 						</div>
 					</div>

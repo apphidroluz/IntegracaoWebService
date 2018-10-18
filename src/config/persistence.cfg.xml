@@ -8,8 +8,7 @@
 		<property name="hibernate.connection.username">import_hidrol</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<property name="hibernate.connection.password">KhyFXp39</property>
-		<property name="hibernate.show_sql">true</property>
-		<property name="hibernate.format_sql">true</property>
+		
 		<property name="hibernate.connection.useUnicode">true</property>
 		<property name="hibernate.connection.characterEncoding">utf-8</property>
 		
