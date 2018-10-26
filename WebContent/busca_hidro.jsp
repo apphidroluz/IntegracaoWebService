@@ -61,10 +61,8 @@
 			<a type="submit" class="btn btn-danger"
 				href="Controle?cmd=consulta_importacao&codigo=${COD_CLI}"
 				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Consultar
-				Importações</a> <a type="submit" class="btn btn-info"
-				data-toggle="modal" data-target="#modalDatas"
-				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Datas
-				anteriores</a> <a type="submit" class="btn btn-info"
+				Importações</a>
+				<a type="submit" class="btn btn-info"
 				href="Controle?cmd=sair"
 				style="font-size: 12px; text-decoration: none; color: primary; margin-top: 15px;">Sair</a>
 		</div>
@@ -75,25 +73,13 @@
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<div class="container" align="center">
-					<div>
-						<div class="col-md-12" align="right">
-							<div class="col-md-4" align="left">
-								<a data-toggle="modal" class="btn btn-danger btnv"
-									data-target="#modalAviso"
-									title="Clique para ver os avisos de leitura"
-									style="font-size: 12px; margin-left: -60px">Alertas</a>
-							</div>
-							<div class="col-md-4" align="center"
+					
+
+							<div class="col-md-12" align="center"
 								style="font-size: 15px; margin-top: 5px">
 								<b> LEITURA DOS HIDRÔMETROS </b>
 							</div>
-							<div class="col-md-4" align="right">
-								<a href="Controle?cmd=exportar" class="btn btn-success btnv"
-									title="Clique para exportar as leituras"
-									style="font-size: 12px; margin-right: -60px">Exportar</a>
-							</div>
-						</div>
-					</div>
+	
 				</div>
 			</div>
 			<c:if test="${msg != null}">
@@ -116,6 +102,7 @@
 							<th>Há Vazamento</th>
 							<th>Houve Vazamento</th>
 							<th>Retorno D'água</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -145,6 +132,9 @@
 								<c:if test="${linha.retornoAgua == 1}">
 									<td>Sim</td>
 								</c:if>
+								<td><a type="submit" class="glyphicon glyphicon-plus"
+											style="color: danger;"
+											href="Controle?cmd=addLista"></a></td>
 							</tr>
 						</c:forEach>
 					</tbody>
@@ -152,103 +142,6 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- MODAL DE ALERTA -->
-	<div class="modal fade" id="modalAviso" role="dialog">
-		<div class="modal-dialog">
-			<!-- Modal content-->
-			<div class="panel panel-info">
-				<div class="panel panel-heading">
-					<div class="panel-title">Alerta de leitura</div>
-				</div>
-				<div class="panel-body">
-					<c:if test="${not empty lista}">
-						<div class="panel-body" class="col-md-12" align="center"
-							style="font-size: 14px; margin-top: -30px">
-							<b>Alguns hidrômetros não foram encontrados:</b>
-						</div>
-						<table class="table table-bordered table-hover table-condensed">
-							<thead>
-								<tr>
-									<th style="text-align: center">Localização</th>
-									<th style="text-align: center">Nº do Hidrometro</th>
-									<th style="text-align: center"></th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach items="${lista}" var="linha">
-									<tr>
-										<td>${linha.local}</td>
-										<td>${linha.num_hidro}</td>
-										<td><a type="submit" class="glyphicon glyphicon-search"
-											style="color: danger;"
-											href="Controle?cmd=buscaHidro&num_hidro=${linha.num_hidro}"></a></td>
-								</c:forEach>
-							</tbody>
-						</table>
-					</c:if>
-					<c:if test="${empty lista}">
-						<div class="panel-body" class="col-md-12" align="center"
-							style="font-size: 14px; margin-top: -20px">
-							<b>Todos os hidrômetros foram encontrados</b>
-						</div>
-					</c:if>
-					<div class="col-md-10"></div>
-					<div class="col-md-2">
-						<button type="button" class="btn btn-danger text-right btn-sm"
-							data-dismiss="modal" style="margin-left: 20px; margin-top: -5px">Fechar</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- FIM DO MODAL -->
-
-	<!-- MODAL DE DATAS -->
-	<div class="container">
-		<!-- Modal -->
-		<div class="modal fade" id="modalDatas" role="dialog">
-			<div class="modal-dialog">
-				<!-- Modal content-->
-				<div class="panel panel-info">
-					<div class="panel panel-heading">
-						<div class="panel-title">Leituras Anteriores</div>
-					</div>
-					<div class="panel-body">
-						<table class="table table-bordered table-hover table-condensed"
-							style="font-size: 14px; margin-top: -20px">
-							<thead>
-								<tr>
-									<th style="text-align: center; vertical-align: middle">Datas
-										Anteriores</th>
-									<th style="text-align: center; vertical-align: middle"></th>
-								</tr>
-							</thead>
-							<tbody>
-								<c:forEach items="${datas}" var="linha1">
-									<tr>
-										<td>${linha1}</td>
-										<td><a type="submit"
-											class="btn btn-success text-right btn-sm"
-											href="Controle?cmd=atualizaData&data=${linha1}"
-											style="text-align: rigth; text-decoration: none">Selecionar
-												Data</a></td>
-								</c:forEach>
-							</tbody>
-						</table>
-						<div class="col-md-10"></div>
-						<div class="col-md-2">
-							<button type="button" class="btn btn-danger text-right btn-sm"
-								href="Controle?cmd=atualizaData" data-dismiss="modal"
-								style="margin-left: 20px; margin-top: -5px">Fechar</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
 </body>
 
 <script type="text/javascript" charset="UTF-8">

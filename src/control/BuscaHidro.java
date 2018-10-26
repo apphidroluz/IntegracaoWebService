@@ -4,15 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,31 +18,40 @@ import org.json.JSONObject;
 
 import entity.Dados;
 
-public class ConsumoData {
-
+public class BuscaHidro {
+	
 	private static final long serialVersionUID = 1L;
-	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/api/cliente/v2/logar";
+	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/api/medicoes/vnumhidro/buscarxml";
+	String rt = null;
 	ArrayList<Dados> dados = null;
-	ArrayList<String> datas = null;
+	
+	public static void main(String[] args) {
+		BuscaHidro b = new BuscaHidro();
+		
+		try {
+			b.retorna_token("A17B605255", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJST0JTT04iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImNyZWF0ZWQiOjE1Mzk4NjgxNzYyNzEsImV4cCI6MTU0MDQ3Mjk3Nn0.sAorv3GHAZ39Zl4v8seSwJfpKdVjPUX8df-RfVcj3NtHsQXjZU9Wc7f7Yoa7z2EBzjeN3i_-wrHm4xuZSAAsLg");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
-	public ArrayList<String> retorna_token(String Login, String Senha, String Data, String token) throws JSONException {
+	public ArrayList<Dados> retorna_token(String num_hidro,String token) throws JSONException {
 
+	
 		String restUrl = path;
 		JSONObject acesso = new JSONObject();
-		acesso.put("login", Login);
-		acesso.put("senha", Senha);
-		acesso.put("dataDe", Data);
+		acesso.put("numHidrometro", num_hidro);
 		String jsonData = acesso.toString();
 
-		
-		ConsumoData httpPostReq = new ConsumoData();
+		BuscaHidro httpPostReq = new BuscaHidro();
 
 		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, token);
 
-		datas = httpPostReq.executeReq(httpPost, jsonData);
+		dados = httpPostReq.executeReq(httpPost, jsonData);
 
-		return datas;
+		return dados;
 
 	}
 
@@ -59,9 +64,9 @@ public class ConsumoData {
 		return post;
 	}
 
-	ArrayList<String> executeReq(HttpPost httpPost, String jsonData) {
+	ArrayList<Dados> executeReq(HttpPost httpPost, String jsonData) {
 		try {
-			datas = executeHttpRequest(httpPost, jsonData);
+			dados = executeHttpRequest(httpPost, jsonData);
 		} catch (UnsupportedEncodingException e) {
 			System.out.println("error while encoding api url : " + e);
 			e.printStackTrace();
@@ -73,10 +78,10 @@ public class ConsumoData {
 		} finally {
 			httpPost.releaseConnection();
 		}
-		return datas;
+		return dados;
 	}
 
-	public ArrayList<String> executeHttpRequest(HttpPost httpPost, String jsonData)
+	public ArrayList<Dados> executeHttpRequest(HttpPost httpPost, String jsonData)
 			throws UnsupportedEncodingException, IOException, JSONException {
 
 		HttpResponse response = null;
@@ -94,12 +99,16 @@ public class ConsumoData {
 		System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
+		
+	
 		while ((line = reader.readLine()) != null) {
 			result.append(line);
 		}
 
+	
 		JSONObject json1 = new JSONObject(result.toString());
+		
+		System.out.println(result.toString());
 
 		JSONArray jsonArray = json1.getJSONArray("data");
 
@@ -107,7 +116,7 @@ public class ConsumoData {
 			JSONObject obj2 = jsonArray.getJSONObject(i);
 
 			Dados item = new Dados(obj2.getInt("idXML_TAB"), obj2.getString("concentrador"),
-					obj2.getString("numHidrometro"), obj2.getString("data"), obj2.getInt("indice_atual")/1000,
+					obj2.getString("numHidrometro"), obj2.getString("data"), obj2.getInt("indice_atual") / 1000,
 					obj2.getString("alarmes"), obj2.getString("unit"));
 
 			String[] alarmes = item.getAlarmes().split(":");
@@ -121,17 +130,9 @@ public class ConsumoData {
 
 			dados.add(item);
 		}
-		
 
-		Map<String, List<Dados>> consumo = dados.stream().collect(Collectors.groupingBy(Dados::getData));
-
-
-		ArrayList<String> values2 = (ArrayList<String>) consumo.keySet().stream().collect(Collectors.toList());
-
-		
-		return values2;
+		return dados;
 
 	}
 
-	
 }

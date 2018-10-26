@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,15 +21,15 @@ import org.json.JSONObject;
 
 import entity.Dados;
 
-public class ConsumoData {
+public class BuscaConsumoData {
 
 	private static final long serialVersionUID = 1L;
-	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/api/cliente/v2/logar";
+	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/api/cliente/v3/logar";
+	String rt = null;
 	ArrayList<Dados> dados = null;
-	ArrayList<String> datas = null;
 
 
-	public ArrayList<String> retorna_token(String Login, String Senha, String Data, String token) throws JSONException {
+	public ArrayList<Dados> retorna_token(String Login, String Senha, String Data, String Token) throws JSONException {
 
 		String restUrl = path;
 		JSONObject acesso = new JSONObject();
@@ -39,14 +38,13 @@ public class ConsumoData {
 		acesso.put("dataDe", Data);
 		String jsonData = acesso.toString();
 
-		
-		ConsumoData httpPostReq = new ConsumoData();
+		Consumo httpPostReq = new Consumo();
 
-		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, token);
+		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, Token);
 
-		datas = httpPostReq.executeReq(httpPost, jsonData);
+		dados = httpPostReq.executeReq(httpPost, jsonData);
 
-		return datas;
+		return dados;
 
 	}
 
@@ -59,9 +57,9 @@ public class ConsumoData {
 		return post;
 	}
 
-	ArrayList<String> executeReq(HttpPost httpPost, String jsonData) {
+	ArrayList<Dados> executeReq(HttpPost httpPost, String jsonData) {
 		try {
-			datas = executeHttpRequest(httpPost, jsonData);
+			dados = executeHttpRequest(httpPost, jsonData);
 		} catch (UnsupportedEncodingException e) {
 			System.out.println("error while encoding api url : " + e);
 			e.printStackTrace();
@@ -73,10 +71,10 @@ public class ConsumoData {
 		} finally {
 			httpPost.releaseConnection();
 		}
-		return datas;
+		return dados;
 	}
 
-	public ArrayList<String> executeHttpRequest(HttpPost httpPost, String jsonData)
+	public ArrayList<Dados> executeHttpRequest(HttpPost httpPost, String jsonData)
 			throws UnsupportedEncodingException, IOException, JSONException {
 
 		HttpResponse response = null;
@@ -107,7 +105,7 @@ public class ConsumoData {
 			JSONObject obj2 = jsonArray.getJSONObject(i);
 
 			Dados item = new Dados(obj2.getInt("idXML_TAB"), obj2.getString("concentrador"),
-					obj2.getString("numHidrometro"), obj2.getString("data"), obj2.getInt("indice_atual")/1000,
+					obj2.getString("numHidrometro"), obj2.getString("data"), obj2.getInt("indice_atual") / 1000,
 					obj2.getString("alarmes"), obj2.getString("unit"));
 
 			String[] alarmes = item.getAlarmes().split(":");
@@ -121,17 +119,8 @@ public class ConsumoData {
 
 			dados.add(item);
 		}
-		
 
-		Map<String, List<Dados>> consumo = dados.stream().collect(Collectors.groupingBy(Dados::getData));
-
-
-		ArrayList<String> values2 = (ArrayList<String>) consumo.keySet().stream().collect(Collectors.toList());
-
-		
-		return values2;
+		return dados;
 
 	}
-
-	
 }

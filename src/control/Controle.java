@@ -38,8 +38,10 @@ import persistence.ImportacaoDao;
 public class Controle extends HttpServlet {
 
 	private String filename;
+	private String token;
 	private String path;
 	private List<Dados> dd_atualizados;
+	private List<Dados> listaDados;
 	SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
 	SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -48,6 +50,7 @@ public class Controle extends HttpServlet {
 	SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+
 			throws ServletException, IOException {
 
 		String cmd = request.getParameter("cmd");
@@ -60,21 +63,14 @@ public class Controle extends HttpServlet {
 			consulta_importacao(request, response);
 		} else if (cmd.equalsIgnoreCase("excluir")) {
 			excluir(request, response);
+		} else if (cmd.equalsIgnoreCase("atualizaData")) {
+			buscarpordata(request, response);
+		} else if (cmd.equalsIgnoreCase("buscaHidro")) {
+			buscaHidro(request, response);
+		} else if (cmd.equalsIgnoreCase("addLista")) {
+			addLista(request, response);
 		}
 
-	}
-
-	private void exportar(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			cadastra_fac(dd_atualizados);
-			String nome = file.getName();
-			response.setContentType("text/html");
-			response.setHeader("Content-Disposition", "attachment; filename='" + nome + "'");
-			OutputStream output = response.getOutputStream();
-			Files.copy(file.toPath(), output);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -90,6 +86,335 @@ public class Controle extends HttpServlet {
 			}
 		}
 
+	}
+
+	private void addLista(HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+
+			dd_atualizados.add(listaDados.get(0));
+
+			request.setAttribute("dados", dd_atualizados);
+
+			request.getRequestDispatcher("medicao.jsp").forward(request, response);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+	}
+
+	private void buscaHidro(HttpServletRequest request, HttpServletResponse response) {
+
+		String num_hidro = new String(request.getParameter("num_hidro"));
+		Integer codigo = (Integer) request.getSession().getAttribute("COD_CLI");
+
+		System.out.println(num_hidro);
+
+		BuscaHidro bh = new BuscaHidro();
+		List<Dados> dados = new ArrayList<Dados>();
+		List<Facturation> f = new ArrayList<Facturation>();
+		List<Hidrometro> h = new ArrayList<Hidrometro>();
+
+		try {
+
+			dados = bh.retorna_token(num_hidro, token);
+			h = new HidrometroDao().findhidroCli(codigo);
+			f = new FacturationDao().findFactCli(codigo);
+
+			listaDados = new ArrayList<Dados>();
+
+			for (int i = 0; i < dados.size(); i++) {
+
+				if (listaDados.isEmpty()) {
+
+					listaDados.add(dados.get(i));
+
+				} else {
+
+					int count = 0;
+
+					for (Dados d : listaDados) {
+
+						if (dados.get(i).getNumHidrometro().equalsIgnoreCase(d.getNumHidrometro())) {
+							count++;
+						}
+					}
+
+					if (count == 0) {
+
+						listaDados.add(dados.get(i));
+					}
+				}
+			}
+
+			System.out.println(listaDados);
+
+			for (int i = 0; i < listaDados.size(); i++) {
+
+				if (!f.isEmpty()) {
+
+					for (Facturation fac : f) {
+
+						if (fac.getNum_medidor().contains(listaDados.get(i).getNumHidrometro())) {
+
+							String result = out.format(in.parse(f.get(0).getData_levant().toString()));
+
+							listaDados.get(i).setData_hist(result);
+							listaDados.get(i).setIndice_antigo(fac.getIndice());
+							listaDados.get(i)
+									.setConsumo((double) (listaDados.get(i).getIndice_atual() - fac.getIndice()));
+							listaDados.get(i).setLocalizacao(fac.getLocaligacao());
+							listaDados.get(i).setCodigo(fac.getCod_cad01().getCodigo());
+						}
+
+					}
+
+				} else {
+
+					for (Hidrometro hidro : h) {
+
+						if (hidro.getNum_hidro().contains(listaDados.get(i).getNumHidrometro())) {
+
+							String result = out.format(in.parse(listaDados.get(i).getData()));
+
+							listaDados.get(i).setData_hist(result);
+							listaDados.get(i).setIndice_antigo(dados.get(i).getIndice_atual());
+							listaDados.get(i).setConsumo(0.);
+
+							listaDados.get(i).setLocalizacao(hidro.getLocal());
+							listaDados.get(i).setCodigo(hidro.getCliente().getCodigo());
+
+						}
+					}
+
+				}
+
+				if (listaDados.get(i).getLocalizacao() == null) {
+
+					listaDados.remove(i);
+					i--;
+
+				}
+
+			}
+
+			request.setAttribute("dados", listaDados);
+
+			request.getRequestDispatcher("busca_hidro.jsp").forward(request, response);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void buscarpordata(HttpServletRequest request, HttpServletResponse response) {
+
+		String login = (String) request.getSession().getAttribute("login");
+		String senha = (String) request.getSession().getAttribute("senha");
+		Integer codigo = (Integer) request.getSession().getAttribute("COD_CLI");
+		String data = new String(request.getParameter("data"));
+
+		System.out.println(login + senha + codigo + data);
+
+		data = data.substring(6, 10) + "-" + data.substring(3, 5) + "-" + data.substring(0, 2);
+
+		ConsumoData cd = new ConsumoData();
+		BuscaConsumoData bc = new BuscaConsumoData();
+		List<Facturation> f = new ArrayList<Facturation>();
+		List<Hidrometro> h = new ArrayList<Hidrometro>();
+		List<Dados> dados = new ArrayList<Dados>();
+
+		try {
+
+			Controle cont = new Controle();
+
+			// String data2 = cont.data(codigo);
+
+			ArrayList<String> datas = cd.retorna_token(login, senha, data, token);
+
+			dados = bc.retorna_token(login, senha, data, token);
+
+			Collections.sort(dados);
+
+			dd_atualizados = new ArrayList();
+
+			for (int i = 0; i < dados.size(); i++) {
+
+				if (dd_atualizados.isEmpty()) {
+
+					dd_atualizados.add(dados.get(i));
+
+				} else {
+
+					int count = 0;
+
+					for (Dados d : dd_atualizados) {
+
+						if (dados.get(i).getNumHidrometro().equalsIgnoreCase(d.getNumHidrometro())) {
+							count++;
+						}
+					}
+
+					if (count == 0) {
+
+						dd_atualizados.add(dados.get(i));
+					}
+				}
+			}
+
+			try {
+				h = new HidrometroDao().findhidroCli(codigo);
+				f = new FacturationDao().findFactCli(codigo);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
+			List<Hidrometro> hidro_falta = new ArrayList<Hidrometro>();
+			Boolean Tem = false;
+
+			for (Hidrometro hid : h) {
+				Tem = false;
+				for (Dados d : dd_atualizados) {
+					if (hid.getNum_hidro().contains(d.getNumHidrometro())) {
+						Tem = true;
+					}
+				}
+				if (Tem == false) {
+					hidro_falta.add(hid);
+				}
+			}
+
+			System.out.println(hidro_falta);
+
+			int tmh = dd_atualizados.size();
+
+			for (int i = 0; i < dd_atualizados.size(); i++) {
+
+				if (!f.isEmpty()) {
+
+					for (Facturation fac : f) {
+
+						if (fac.getNum_medidor().contains(dd_atualizados.get(i).getNumHidrometro())) {
+
+							String result = out.format(in.parse(f.get(0).getData_levant().toString()));
+
+							dd_atualizados.get(i).setData_hist(result);
+							dd_atualizados.get(i).setIndice_antigo(fac.getIndice());
+							dd_atualizados.get(i)
+									.setConsumo((double) (dd_atualizados.get(i).getIndice_atual() - fac.getIndice()));
+							dd_atualizados.get(i).setLocalizacao(fac.getLocaligacao());
+							dd_atualizados.get(i).setCodigo(fac.getCod_cad01().getCodigo());
+						}
+
+					}
+
+				} else {
+
+					for (Hidrometro hidro : h) {
+
+						if (hidro.getNum_hidro().contains(dd_atualizados.get(i).getNumHidrometro())) {
+
+							String result = out.format(in.parse(dd_atualizados.get(i).getData()));
+
+							dd_atualizados.get(i).setData_hist(result);
+							dd_atualizados.get(i).setIndice_antigo(dd_atualizados.get(i).getIndice_atual());
+							dd_atualizados.get(i).setConsumo(0.);
+
+							dd_atualizados.get(i).setLocalizacao(hidro.getLocal());
+							dd_atualizados.get(i).setCodigo(hidro.getCliente().getCodigo());
+
+						}
+					}
+
+				}
+
+				if (dd_atualizados.get(i).getLocalizacao() == null) {
+
+					dd_atualizados.remove(i);
+					i--;
+
+				}
+
+			}
+
+			
+
+			request.getSession().setAttribute("login", login);
+			request.getSession().setAttribute("senha", senha);
+			request.setAttribute("dados", dd_atualizados);
+			request.setAttribute("lista", hidro_falta);
+			request.setAttribute("datas", datas);
+			request.getRequestDispatcher("medicao.jsp").forward(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void exportar(HttpServletRequest request, HttpServletResponse response) {
+		
+		
+		try {
+
+			ServletContext context = request.getServletContext();
+			path = context.getRealPath("/");
+
+			file = new File(path + dd_atualizados.get(0).getCodigo() + ".txt");
+
+			FileWriter writer = new FileWriter(file);
+
+			writer.write(Parametros.cabecalho);
+			writer.write(System.getProperty("line.separator"));
+
+			for (int j = 0; j < dd_atualizados.size(); j++) {
+
+				SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
+
+				String dt = dd_atualizados.get(j).getData().substring(0, 10);
+				
+				System.out.println("oi" + dt);
+				
+				String dataLevant = dt.substring(0, 2) + "/" + dt.substring(3, 5) + "/" + dt.substring(6, 10);
+				
+				System.out.println("oi2" +dataLevant);
+
+				String dth = dd_atualizados.get(j).getData_hist();
+
+				dth = dth.substring(8, 10) + "/" + dth.substring(5, 7) + "/" + dth.substring(0, 4);
+
+				writer.write(dd_atualizados.get(j).getLocalizacao() + "\t" + dd_atualizados.get(j).getIndice_atual()
+						+ "\t" + dd_atualizados.get(j).getIndice_antigo() + "\t" + dd_atualizados.get(j).getConsumo()
+						+ "\t" + dd_atualizados.get(j).getHaDesmontagem() + "\t"
+						+ dd_atualizados.get(j).getHaVazamento() + "\t" + dd_atualizados.get(j).getHouveVazamento()
+						+ "\t" + dd_atualizados.get(j).getMedidorBloqueado() + "\t" + dd_atualizados.get(j).getCodigo()
+						+ "\t" + dd_atualizados.get(j).getNumHidrometro() + "\t" + dataLevant + "\t" + dth + "\t" + 8
+						+ "\t" + 0 + "\t" + dd_atualizados.get(j).getHouveDesmontagem() + "\t"
+						+ dd_atualizados.get(j).getRetornoAgua());
+				writer.write(System.getProperty("line.separator"));
+
+			}
+
+			writer.close();
+
+			cadastra_fac(dd_atualizados);
+			String nome = file.getName();
+			response.setContentType("text/html");
+			response.setHeader("Content-Disposition", "attachment; filename='" + nome + "'");
+			OutputStream output = response.getOutputStream();
+			Files.copy(file.toPath(), output);
+			
+		} catch (Exception e) {
+			
+			
+			e.printStackTrace();
+			
+			
+		}
 	}
 
 	protected String logar(HttpServletRequest request, HttpServletResponse response)
@@ -112,21 +437,16 @@ public class Controle extends HttpServlet {
 		try {
 
 			Clientes_Concentrador cli = new Clientes_ConcentradorDao().logar(login, senha);
-			
-			
-			
 
 			if (cli != null) {
-				
-				
+
 				Controle cont = new Controle();
-				
+
+				token = new Resgata_Token().retorna_token(login, senha);
+
 				String data = cont.data(cli.getCliente().getCodigo());
-				
-				
-				ArrayList<String> datas = cd.retorna_token(login, senha, data);
-				
-				System.out.println(datas);
+
+				ArrayList<String> datas = cd.retorna_token(login, senha, data, token);
 
 				Nome_Cliente = cli.getCliente().getNomfant_apel();
 				Enderenco = cli.getCliente().getEndereco();
@@ -183,8 +503,6 @@ public class Controle extends HttpServlet {
 					}
 				}
 
-				System.out.println(hidro_falta);
-
 				for (int i = 0; i < dd_atualizados.size(); i++) {
 
 					if (!f.isEmpty()) {
@@ -225,53 +543,23 @@ public class Controle extends HttpServlet {
 
 					}
 
-				if (dd_atualizados.get(i).getLocalizacao() == null) {
+					if (dd_atualizados.get(i).getLocalizacao() == null) {
 
 						dd_atualizados.remove(i);
+						i--;
 					}
 
 				}
 
-				ServletContext context = request.getServletContext();
-				path = context.getRealPath("/");
-
-				file = new File(path + dados.get(0).getIdXML_TAB() + ".txt");
-
-				FileWriter writer = new FileWriter(file);
-
-				writer.write(Parametros.cabecalho);
-				writer.write(System.getProperty("line.separator"));
-
-				for (int j = 0; j < dd_atualizados.size(); j++) {
-
-					String dt = dd_atualizados.get(j).getData().substring(0, 10);
-
-					SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd");
-					SimpleDateFormat out = new SimpleDateFormat("dd-MM-yyyy");
-
-					String result = out.format(out.parse(dt));
-
-					writer.write(dd_atualizados.get(j).getLocalizacao() + "\t" + dd_atualizados.get(j).getIndice_atual()
-							+ "\t" + dd_atualizados.get(j).getIndice_antigo() + "\t"
-							+ dd_atualizados.get(j).getConsumo() + "\t" + dd_atualizados.get(j).getHaDesmontagem()
-							+ "\t" + dd_atualizados.get(j).getHaVazamento() + "\t"
-							+ dd_atualizados.get(j).getHouveVazamento() + "\t"
-							+ dd_atualizados.get(j).getMedidorBloqueado() + "\t" + dd_atualizados.get(j).getCodigo()
-							+ "\t" + dd_atualizados.get(j).getNumHidrometro() + "\t" + result + "\t"
-							+ dd_atualizados.get(j).getData_hist() + "\t" + 8 + "\t" + 0 + "\t"
-							+ dd_atualizados.get(j).getHouveDesmontagem() + "\t"
-							+ dd_atualizados.get(j).getRetornoAgua());
-					writer.write(System.getProperty("line.separator"));
-
-				}
-
-				writer.close();
 
 				request.getSession().setAttribute("CONDO", Nome_Cliente);
 				request.getSession().setAttribute("ENDE", Enderenco);
 				request.getSession().setAttribute("COD_CLI", Cod_cli);
+				request.getSession().setAttribute("login", login);
+				request.getSession().setAttribute("senha", senha);
 				request.setAttribute("dados", dd_atualizados);
 				request.setAttribute("lista", hidro_falta);
+				request.setAttribute("datas", datas);
 				request.getRequestDispatcher("medicao.jsp").forward(request, response);
 
 			} else {
@@ -372,7 +660,7 @@ public class Controle extends HttpServlet {
 			ImportacaoDao i = new ImportacaoDao();
 
 			List<Importacao> importacoes = i.findImp(cod_cli);
-			
+
 			System.out.println(importacoes);
 
 			request.setAttribute("dados", importacoes);
@@ -424,8 +712,12 @@ public class Controle extends HttpServlet {
 		ImportacaoDao i = new ImportacaoDao();
 		try {
 			List<Importacao> importacoes = i.findImp(cod_cli);
-		
-			data = SDF.format(importacoes.get(0).getData_imp());
+			if (!importacoes.isEmpty()) {
+				data = SDF.format(importacoes.get(0).getData_imp());
+			} else {
+				data = "2018-01-01";
+			}
+
 			System.out.println(data);
 		} catch (HibernateException e) {
 			// TODO Auto-generated catch block
@@ -434,15 +726,14 @@ public class Controle extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		return data;
 	}
-	 public static void main(String[] args) {
+
+	public static void main(String[] args) {
 		Controle c = new Controle();
-		 c.data(1);
-		 
-		 
-		
+		c.data(1);
+
 	}
+
 }
