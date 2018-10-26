@@ -106,6 +106,7 @@ public class Resgata_Token {
 			System.out.println(token);
 		} catch (Exception e) {
 			System.out.println("erro");
+			e.printStackTrace();
 		}
 
 	}

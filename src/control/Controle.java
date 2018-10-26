@@ -270,6 +270,7 @@ public class Controle extends HttpServlet {
 				f = new FacturationDao().findFactCli(codigo);
 			} catch (Exception e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 
 			List<Hidrometro> hidro_falta = new ArrayList<Hidrometro>();
@@ -486,6 +487,7 @@ public class Controle extends HttpServlet {
 					f = new FacturationDao().findFactCli(cli.getCliente().getCodigo());
 				} catch (Exception e) {
 					// TODO: handle exception
+					e.printStackTrace();
 				}
 
 				List<Hidrometro> hidro_falta = new ArrayList<Hidrometro>();
