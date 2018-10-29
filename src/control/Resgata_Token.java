@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class Resgata_Token {
 
 	private static final long serialVersionUID = 1L;
-	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/";
+	public final static String path = "http://env-4539655.jelasticlw.com.br/auth/";
 	public final static String user = "ROBSON";
 	public final static String senha = "12345";
 	public String token;

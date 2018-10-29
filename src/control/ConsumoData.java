@@ -23,7 +23,7 @@ import entity.Dados;
 public class ConsumoData {
 
 	private static final long serialVersionUID = 1L;
-	public final static String path = "https://vast-cliffs-21624.herokuapp.com/auth/api/cliente/v2/logar";
+	public final static String path = "http://env-4539655.jelasticlw.com.br/auth/api/cliente/v2/logar";
 	String rt = null;
 	ArrayList<Dados> dados = null;
 	ArrayList<String> datas = null;
