@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,26 +18,36 @@ import org.json.JSONObject;
 
 import entity.Dados;
 
-public class BuscaConsumoData {
-
+public class BuscaHidro {
+	
 	private static final long serialVersionUID = 1L;
-	public final static String path = "http://env-4539655.jelasticlw.com.br/auth/api/cliente/v3/logar";
+	public final static String path = "http://env-4539655.jelasticlw.com.br/auth/api/medicoes/vnumhidro/buscarxml";
 	String rt = null;
 	ArrayList<Dados> dados = null;
+	
+	public static void main(String[] args) {
+		BuscaHidro b = new BuscaHidro();
+		
+		try {
+			b.retorna_token("A17B605255", "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJST0JTT04iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImNyZWF0ZWQiOjE1Mzk4NjgxNzYyNzEsImV4cCI6MTU0MDQ3Mjk3Nn0.sAorv3GHAZ39Zl4v8seSwJfpKdVjPUX8df-RfVcj3NtHsQXjZU9Wc7f7Yoa7z2EBzjeN3i_-wrHm4xuZSAAsLg");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
-	public ArrayList<Dados> retorna_token(String Login, String Senha, String Data, String Token) throws JSONException {
+	public ArrayList<Dados> retorna_token(String num_hidro,String token) throws JSONException {
 
+	
 		String restUrl = path;
 		JSONObject acesso = new JSONObject();
-		acesso.put("login", Login);
-		acesso.put("senha", Senha);
-		acesso.put("dataDe", Data);
+		acesso.put("numHidrometro", num_hidro);
 		String jsonData = acesso.toString();
 
-		Consumo httpPostReq = new Consumo();
+		BuscaHidro httpPostReq = new BuscaHidro();
 
-		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, Token);
+		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, token);
 
 		dados = httpPostReq.executeReq(httpPost, jsonData);
 
@@ -92,12 +99,16 @@ public class BuscaConsumoData {
 		System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
+		
+	
 		while ((line = reader.readLine()) != null) {
 			result.append(line);
 		}
 
+	
 		JSONObject json1 = new JSONObject(result.toString());
+		
+		System.out.println(result.toString());
 
 		JSONArray jsonArray = json1.getJSONArray("data");
 
@@ -123,4 +134,5 @@ public class BuscaConsumoData {
 		return dados;
 
 	}
+
 }

@@ -23,30 +23,14 @@ import entity.Dados;
 public class ConsumoData {
 
 	private static final long serialVersionUID = 1L;
+
 	public final static String path = "http://env-4539655.jelasticlw.com.br/auth/api/cliente/v2/logar";
 	String rt = null;
 	ArrayList<Dados> dados = null;
 	ArrayList<String> datas = null;
 
-	public static void main(String[] args) throws JSONException {
-		ConsumoData c = new ConsumoData();
-		List<String> d = new ArrayList<String>();
 
-		d = c.retorna_token("ROBSON", "12345", "2018-09-09");
-		
-		System.out.println(d);
-	
-	}
-
-	public ArrayList<String> retorna_token(String Login, String Senha, String Data) throws JSONException {
-
-		try {
-			rt = new Resgata_Token().retorna_token(Login, Senha);
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-
+	public ArrayList<String> retorna_token(String Login, String Senha, String Data, String token) throws JSONException {
 
 		String restUrl = path;
 		JSONObject acesso = new JSONObject();
@@ -58,7 +42,7 @@ public class ConsumoData {
 		
 		ConsumoData httpPostReq = new ConsumoData();
 
-		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, rt);
+		HttpPost httpPost = httpPostReq.createHttpGetConnection(restUrl, token);
 
 		datas = httpPostReq.executeReq(httpPost, jsonData);
 
